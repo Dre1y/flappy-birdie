@@ -1,6 +1,6 @@
-import pygame
+import pygame # type: ignore
 import sys
-from PIL import Image
+from PIL import Image # type: ignore
 from game.game_mode import start_game
 
 # Inicializa o Pygame
@@ -20,7 +20,7 @@ ORANGE = (255, 165, 0)
 RED = (255, 0, 0)
 
 # Configurações da fonte
-font_path = 'assets/PressStart2P-Regular.ttf'  # Caminho para a fonte
+font_path = 'assets/fonts/PressStart2P-Regular.ttf'  # Caminho para a fonte
 font = pygame.font.Font(font_path, 40)  # Fonte para o título (diminuído)
 button_font = pygame.font.Font(font_path, 25)  # Fonte para os botões (diminuído)
 
@@ -39,7 +39,7 @@ def load_gif_frames(gif_path):
     return frames
 
 # Carregar os frames do GIF de fundo
-bg_frames = load_gif_frames('assets/background.gif')
+bg_frames = load_gif_frames('assets/backgrounds/main-background.gif')
 
 # Função para desenhar o título e botões
 def draw_title_and_buttons():

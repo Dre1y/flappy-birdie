@@ -1,4 +1,4 @@
-import pygame
+import pygame  # type: ignore
 import sys
 import random
 
@@ -14,21 +14,30 @@ pygame.display.set_caption("Flappy Birdie")
 
 # Cores
 WHITE = (255, 255, 255)
-ORANGE = (255, 165, 0)
-RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 
 # Fonte
-font_path = 'assets/PressStart2P-Regular.ttf'
+font_path = 'assets/fonts/PressStart2P-Regular.ttf'
 font = pygame.font.Font(font_path, 40)
+
+# Carregar e redimensionar imagens
+bird_image = pygame.image.load('assets/birds/basic-yellow-bird.png')  # Imagem do pássaro
+bird_image = pygame.transform.scale(bird_image, (30, 30))  # Redimensiona a imagem do pássaro
+pipe_image = pygame.image.load('assets/pipes/green-pipe.png')  # Imagem do cano
+pipe_image = pygame.transform.scale(pipe_image, (60, 260))  # Redimensiona a imagem do cano
+bg_image = pygame.image.load('assets/backgrounds/mode-background.jpg')  # Imagem de fundo
+
+# Inverte a imagem do cano superior
+pipe_image_flipped = pygame.transform.flip(pipe_image, False, True)  # Inverte verticalmente
 
 # Classes do jogo
 class Bird:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = 40
-        self.height = 40
+        self.width = 30  # Tamanho do pássaro
+        self.height = 30  # Tamanho do pássaro
         self.velocity = 0
         self.gravity = 0.5
         self.jump_strength = -10
@@ -44,43 +53,33 @@ class Bird:
         self.velocity = self.jump_strength
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (255, 255, 0), (self.x, self.y, self.width, self.height))
+        screen.blit(bird_image, (self.x, self.y))  # Desenha a imagem do pássaro
 
 class Pipe:
     def __init__(self, x):
         self.x = x
-        self.width = 60
-        self.height = random.randint(100, 400)
-        self.gap = 150
+        self.width = 60  # Largura dos canos
+        self.height = random.randint(100, 350)  # Altura do cano superior
+        self.gap = 150  # Gap fixo entre os canos
         self.speed = 5
+
+        # Calcula a altura inferior com base na altura superior e no gap
+        self.bottom_height = self.height + self.gap
 
     def update(self):
         self.x -= self.speed
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (0, 255, 0), (self.x, 0, self.width, self.height))
-        pygame.draw.rect(screen, (0, 255, 0), (self.x, self.height + self.gap, self.width, 600))
+        # Desenha os canos como retângulos verdes (base de depuração)
+        pygame.draw.rect(screen, GREEN, (self.x, 0, self.width, self.height))  # Cano superior
+        pygame.draw.rect(screen, GREEN, (self.x, self.bottom_height, self.width, SCREEN_HEIGHT - self.bottom_height))  # Cano inferior
+
+        # Desenha as imagens dos canos sobre os retângulos
+        screen.blit(pipe_image_flipped, (self.x, self.height - pipe_image_flipped.get_height()))  # Cano superior invertido
+        screen.blit(pipe_image, (self.x, self.bottom_height))  # Cano inferior
 
     def is_off_screen(self):
         return self.x + self.width < 0
-
-# Função para desenhar a tela inicial
-def draw_title_and_buttons():
-    screen.fill(WHITE)  # Limpar a tela
-    title_text = font.render("Flappy", True, (255, 255, 0))
-    title_text2 = font.render("Birdie", True, ORANGE)
-    screen.blit(title_text, (SCREEN_WIDTH // 2 - title_text.get_width() // 2, 100))
-    screen.blit(title_text2, (SCREEN_WIDTH // 2 - title_text2.get_width() // 2, 150))
-
-    def draw_button(text, y_pos):
-        button_text = font.render(text, True, WHITE)
-        button_rect = pygame.Rect(SCREEN_WIDTH // 2 - button_text.get_width() // 2, y_pos, button_text.get_width() + 40, 60)
-        pygame.draw.rect(screen, ORANGE, button_rect, border_radius=20)
-        pygame.draw.rect(screen, RED, button_rect, 5)
-        screen.blit(button_text, (button_rect.x + 20, button_rect.y + 15))
-
-    draw_button("One Player", 250)
-    draw_button("Exit", 320)
 
 # Função para o jogo de um jogador
 def start_game():
@@ -110,12 +109,12 @@ def start_game():
 
             # Verifica colisões
             if bird.x + bird.width > pipe.x and bird.x < pipe.x + pipe.width:
-                if bird.y < pipe.height or bird.y + bird.height > pipe.height + pipe.gap:
+                if bird.y < pipe.height or bird.y + bird.height > pipe.bottom_height:
                     running = False  # Game Over
 
             if pipe.is_off_screen():
                 pipes.remove(pipe)
-                pipes.append(Pipe(600))
+                pipes.append(Pipe(600))  # Adiciona um novo cano
                 score += 1  # Incrementa a pontuação
 
         bird.draw(screen)
@@ -127,25 +126,6 @@ def start_game():
         pygame.display.flip()
         clock.tick(30)
 
-# Função principal
-def main():
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                if 250 <= mouse_pos[1] <= 300:
-                    start_game()  # Inicia o jogo de um jogador
-                elif 320 <= mouse_pos[1] <= 380:
-                    pygame.quit()
-                    sys.exit()
-
-        draw_title_and_buttons()
-        pygame.display.flip()
-
 # Inicia o jogo
 if __name__ == "__main__":
-    main()
+    start_game()
