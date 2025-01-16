@@ -90,7 +90,7 @@ def start_game():
     running = True
 
     while running:
-        screen.fill(WHITE)
+        screen.blit(bg_image, (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
