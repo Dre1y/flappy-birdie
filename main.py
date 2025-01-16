@@ -1,7 +1,7 @@
 import pygame # type: ignore
 import sys
 from PIL import Image # type: ignore
-from game.game_mode import start_one_player_game, start_two_player_game
+from game.game_mode import start_one_player_game, start_two_player_game, start_player_vs_machine_game
 
 # Inicializa o Pygame
 pygame.init()
@@ -83,7 +83,7 @@ def main():
                 elif 270 <= mouse_pos[1] <= 310:
                     start_two_player_game()  # Iniciar "Dois Jogadores"
                 elif 320 <= mouse_pos[1] <= 360:
-                    pass  # Iniciar "Jogador Vs Maquina"
+                    start_player_vs_machine_game()  # Iniciar "Jogador Vs Maquina"
                 elif 370 <= mouse_pos[1] <= 410:
                     pass  # Iniciar "Configurações"
                 elif 420 <= mouse_pos[1] <= 460:

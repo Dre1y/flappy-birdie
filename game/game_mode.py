@@ -76,6 +76,23 @@ class Pipe:
 
     def is_off_screen(self):
         return self.x + self.width < 0
+    
+# Lógica da IA MELHORADA: Quando pular (Em andamento)
+def ai_jump_logic(bird, pipes):
+    """Função para a IA decidir quando pular"""
+    bird_center = bird.y + bird.height // 2  # Centro do pássaro
+    closest_pipe = None
+    for pipe in pipes:
+        if pipe.x > bird.x and pipe.x < bird.x + 300:  # Olha para os canos próximos
+            closest_pipe = pipe
+            break
+
+    if closest_pipe:
+        # Verifica se o espaço entre os canos está ficando pequeno
+        gap_middle = closest_pipe.height + closest_pipe.gap // 2
+        if bird_center < gap_middle:
+            # Se o pássaro está abaixo do meio do gap, ele tenta subir
+            bird.jump()
 
 # Função para o jogo de um jogador
 def start_one_player_game():
@@ -230,6 +247,91 @@ def start_two_player_game():
         score_text2 = font.render(f"Score Jogador 2: {score2}", True, BLACK)
         screen.blit(score_text1, (10, 10))
         screen.blit(score_text2, (10, 50))
+
+        pygame.display.flip()
+        clock.tick(30)
+
+def start_player_vs_machine_game():
+    bird = Bird(100, 250)  # Jogador
+    bird_ai = Bird(200, 250)  # Máquina
+    pipes = [Pipe(600)]
+    score = 0
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        screen.blit(bg_image, (0, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                bird.jump()  # Jogador pula com a tecla espaço
+
+        bird.update()
+
+        # A máquina toma decisões automáticas
+        if bird_ai.y < pipes[0].height or bird_ai.y + bird_ai.height > pipes[0].bottom_height:
+            bird_ai.jump()  # A máquina pula se necessário
+
+        bird_ai.update()
+
+        # Verifica colisão com o teto e o chão para ambos
+        if bird.y < -1 or bird.y == 480:
+            game_over_text = font.render("Game Over - Jogador", True, BLACK)
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Espera 1 segundo
+            running = False  # Game Over Jogador
+
+        if bird_ai.y < -1 or bird_ai.y == 480:
+            game_over_text = font.render("Game Over - Máquina", True, BLACK)
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Espera 1 segundo
+            running = False  # Game Over Máquina
+
+        # Atualiza e desenha os canos
+        for pipe in pipes:
+            pipe.update()
+            pipe.draw(screen)
+
+            # Verifica colisões
+            if bird.x + bird.width > pipe.x and bird.x < pipe.x + pipe.width:
+                if bird.y < pipe.height or bird.y + bird.height > pipe.bottom_height:
+                    game_over_text = font.render("Game Over - Jogador", True, BLACK)
+                    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+                    pygame.display.flip()
+                    pygame.time.delay(1000)  # Espera 1 segundo
+                    running = False  # Game Over Jogador
+
+            if bird_ai.x + bird_ai.width > pipe.x and bird_ai.x < pipe.x + pipe.width:
+                if bird_ai.y < pipe.height or bird_ai.y + bird_ai.height > pipe.bottom_height:
+                    game_over_text = font.render("Game Over - Máquina", True, BLACK)
+                    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+                    pygame.display.flip()
+                    pygame.time.delay(1000)  # Espera 1 segundo
+                    running = False  # Game Over Máquina
+
+        # Adiciona novos canos
+        if pipes[-1].x + pipes[-1].width < SCREEN_WIDTH - 300:
+            pipes.append(Pipe(SCREEN_WIDTH))
+
+        # Remove canos e incrementa o score
+        for pipe in pipes:
+            if pipe.is_off_screen():
+                score += 1  # Incrementa a pontuação
+
+        pipes = [pipe for pipe in pipes if not pipe.is_off_screen()]
+
+        bird.draw(screen)
+        bird_ai.draw(screen)
+
+        # Desenha a pontuação
+        score_text = font.render(f"Score: {score}", True, BLACK)
+        screen.blit(score_text, (10, 10))
 
         pygame.display.flip()
         clock.tick(30)
