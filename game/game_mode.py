@@ -70,11 +70,7 @@ class Pipe:
         self.x -= self.speed
 
     def draw(self, screen):
-        # Desenha os canos como retângulos verdes (base de depuração)
-        pygame.draw.rect(screen, GREEN, (self.x, 0, self.width, self.height))  # Cano superior
-        pygame.draw.rect(screen, GREEN, (self.x, self.bottom_height, self.width, SCREEN_HEIGHT - self.bottom_height))  # Cano inferior
-
-        # Desenha as imagens dos canos sobre os retângulos
+        # Desenha as imagens dos canos
         screen.blit(pipe_image_flipped, (self.x, self.height - pipe_image_flipped.get_height()))  # Cano superior invertido
         screen.blit(pipe_image, (self.x, self.bottom_height))  # Cano inferior
 
@@ -116,10 +112,17 @@ def start_game():
                 if bird.y < pipe.height or bird.y + bird.height > pipe.bottom_height:
                     running = False  # Game Over
 
+        # Adiciona novos canos à medida que os antigos saem da tela
+        if pipes[-1].x + pipes[-1].width < SCREEN_WIDTH - 300:  # Adiciona um novo cano a cada 300 pixels
+            pipes.append(Pipe(SCREEN_WIDTH))
+
+        # Remove os canos que saíram da tela e incrementa o score
+        for pipe in pipes:
             if pipe.is_off_screen():
-                pipes.remove(pipe)
-                pipes.append(Pipe(600))  # Adiciona um novo cano
-                score += 1  # Incrementa a pontuação
+                score += 1  # Incrementa a pontuação quando um cano sai da tela
+
+        # Remove os canos que saíram da tela
+        pipes = [pipe for pipe in pipes if not pipe.is_off_screen()]
 
         bird.draw(screen)
 
