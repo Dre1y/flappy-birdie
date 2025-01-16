@@ -1,7 +1,7 @@
 import pygame # type: ignore
 import sys
 from PIL import Image # type: ignore
-from game.game_mode import start_one_player_game
+from game.game_mode import start_one_player_game, start_two_player_game
 
 # Inicializa o Pygame
 pygame.init()
@@ -68,28 +68,6 @@ def draw_title_and_buttons():
     draw_button("Configurações", 370)
     draw_button("Sair", 420)
 
-# Função para gerenciar eventos e interações
-def handle_events():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-        # Verificar cliques nos botões
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if 220 <= mouse_pos[1] <= 260:
-                start_one_player_game()  # Botão 'Um Jogador' clicado
-            elif 270 <= mouse_pos[1] <= 310:
-                pass  # Botão 'Dois Jogadores' clicado
-            elif 320 <= mouse_pos[1] <= 360:
-                pass  # Botão 'Jogador Vs Maquina' clicado
-            elif 370 <= mouse_pos[1] <= 410:
-                pass  # Botão 'Configurações' clicado
-            elif 420 <= mouse_pos[1] <= 460:
-                pygame.quit()  # Botão 'Sair' clicado
-                sys.exit()
-
 # Função principal
 def main():
     while True:
@@ -103,7 +81,7 @@ def main():
                 if 220 <= mouse_pos[1] <= 260:
                     start_one_player_game()  # Inicia o jogo de um jogador
                 elif 270 <= mouse_pos[1] <= 310:
-                    pass  # Iniciar "Dois Jogadores"
+                    start_two_player_game()  # Iniciar "Dois Jogadores"
                 elif 320 <= mouse_pos[1] <= 360:
                     pass  # Iniciar "Jogador Vs Maquina"
                 elif 370 <= mouse_pos[1] <= 410:

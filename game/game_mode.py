@@ -145,6 +145,91 @@ def start_one_player_game():
         pygame.display.flip()
         clock.tick(30)
 
-# Inicia o jogo
-if __name__ == "__main__":
-    start_one_player_game()
+def start_two_player_game():
+    bird1 = Bird(100, 250)  # Jogador 1
+    bird2 = Bird(200, 250)  # Jogador 2
+    pipes = [Pipe(600)]
+    score1 = 0
+    score2 = 0
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        screen.blit(bg_image, (0, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:  # Tecla do Jogador 1
+                    bird1.jump()
+                if event.key == pygame.K_p:  # Tecla do Jogador 2
+                    bird2.jump()
+
+        bird1.update()
+        bird2.update()
+
+        # Verifica colisão com o teto e o chão para ambos os jogadores
+        if bird1.y < -1 or bird1.y == 480:
+            # Game Over Jogador 1
+            game_over_text = font.render("Game Over - Jogador 1", True, BLACK)
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Espera 1 segundo
+            running = False  # Game Over Jogador 1
+
+        if bird2.y < -1 or bird2.y == 480:
+            # Game Over Jogador 2
+            game_over_text = font.render("Game Over - Jogador 2", True, BLACK)
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Espera 1 segundo
+            running = False  # Game Over Jogador 2
+
+        # Atualiza e desenha os canos
+        for pipe in pipes:
+            pipe.update()
+            pipe.draw(screen)
+
+            # Verifica colisões para ambos os jogadores
+            if bird1.x + bird1.width > pipe.x and bird1.x < pipe.x + pipe.width:
+                if bird1.y < pipe.height or bird1.y + bird1.height > pipe.bottom_height:
+                    game_over_text = font.render("Game Over - Jogador 1", True, BLACK)
+                    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+                    pygame.display.flip()
+                    pygame.time.delay(1000)  # Espera 1 segundo
+                    running = False  # Game Over Jogador 1
+
+            if bird2.x + bird2.width > pipe.x and bird2.x < pipe.x + pipe.width:
+                if bird2.y < pipe.height or bird2.y + bird2.height > pipe.bottom_height:
+                    game_over_text = font.render("Game Over - Jogador 2", True, BLACK)
+                    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+                    pygame.display.flip()
+                    pygame.time.delay(1000)  # Espera 1 segundo
+                    running = False  # Game Over Jogador 2
+
+        # Adiciona novos canos à medida que os antigos saem da tela
+        if pipes[-1].x + pipes[-1].width < SCREEN_WIDTH - 300:
+            pipes.append(Pipe(SCREEN_WIDTH))
+
+        # Remove os canos que saíram da tela e incrementa a pontuação
+        for pipe in pipes:
+            if pipe.is_off_screen():
+                score1 += 1  # Incrementa a pontuação para o Jogador 1
+                score2 += 1  # Incrementa a pontuação para o Jogador 2
+
+        pipes = [pipe for pipe in pipes if not pipe.is_off_screen()]
+
+        bird1.draw(screen)
+        bird2.draw(screen)
+
+        # Desenha a pontuação
+        score_text1 = font.render(f"Score Jogador 1: {score1}", True, BLACK)
+        score_text2 = font.render(f"Score Jogador 2: {score2}", True, BLACK)
+        screen.blit(score_text1, (10, 10))
+        screen.blit(score_text2, (10, 50))
+
+        pygame.display.flip()
+        clock.tick(30)
