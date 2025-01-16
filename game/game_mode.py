@@ -78,7 +78,7 @@ class Pipe:
         return self.x + self.width < 0
 
 # Função para o jogo de um jogador
-def start_game():
+def start_one_player_game():
     bird = Bird(100, 250)
     pipes = [Pipe(600)]
     score = 0
@@ -100,6 +100,12 @@ def start_game():
 
         # Verifica colisão com o teto e o chão
         if bird.y < -1 or bird.y == 480:
+            # Exibe a mensagem de Game Over
+            game_over_text = font.render("Game Over", True, BLACK)
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+            pygame.display.flip()
+                    
+            pygame.time.delay(1000)  # Espera 1 segundo
             running = False  # Game Over
 
         # Atualiza e desenha os canos
@@ -110,6 +116,12 @@ def start_game():
             # Verifica colisões
             if bird.x + bird.width > pipe.x and bird.x < pipe.x + pipe.width:
                 if bird.y < pipe.height or bird.y + bird.height > pipe.bottom_height:
+                    # Exibe a mensagem de Game Over
+                    game_over_text = font.render("Game Over", True, BLACK)
+                    screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, SCREEN_HEIGHT // 2))
+                    pygame.display.flip()
+
+                    pygame.time.delay(1000)  # Espera 1 segundo
                     running = False  # Game Over
 
         # Adiciona novos canos à medida que os antigos saem da tela
@@ -135,4 +147,4 @@ def start_game():
 
 # Inicia o jogo
 if __name__ == "__main__":
-    start_game()
+    start_one_player_game()
