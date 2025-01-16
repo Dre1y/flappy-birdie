@@ -64,12 +64,37 @@ def draw_title_and_buttons():
     # Desenha os botões (subir mais um pouco)
     draw_button("Um Jogador", 220)
     draw_button("Dois Jogadores", 270)
-    draw_button("Jogador Vs Maquina", 320)
-    draw_button("Configurações", 370)
-    draw_button("Sair", 420)
+    draw_button("Jogador VS Máquina", 320)
+    draw_button("Personalização", 370)  # Novo botão de personalização
+    draw_button("Configurações", 420)
+    draw_button("Sair", 470)
 
 # Função principal
 def main():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if 220 <= mouse_pos[1] <= 260:
+                    start_one_player_game()  # Inicia o jogo de um jogador
+                elif 270 <= mouse_pos[1] <= 310:
+                    start_two_player_game()  # Iniciar "Dois Jogadores"
+                elif 320 <= mouse_pos[1] <= 360:
+                    start_player_vs_machine_game()  # Iniciar "Jogador Vs Maquina"
+                elif 370 <= mouse_pos[1] <= 410:
+                    pass  # Iniciar a tela de personalização
+                elif 420 <= mouse_pos[1] <= 460:
+                    pass  # Iniciar "Configurações"
+                elif 470 <= mouse_pos[1] <= 510:
+                    pygame.quit()  # Botão 'Sair' clicado
+                    sys.exit()
+
+        draw_title_and_buttons()
+        pygame.display.flip()
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
