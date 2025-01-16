@@ -102,6 +102,10 @@ def start_game():
 
         bird.update()
 
+        # Verifica colisão com o teto e o chão
+        if bird.y < -1 or bird.y == 480:
+            running = False  # Game Over
+
         # Atualiza e desenha os canos
         for pipe in pipes:
             pipe.update()
